@@ -1,5 +1,7 @@
 import express from "express";
 import router from "./router";
+import cors from "cors";
+import { corsOptions } from "./config/cors";
 import "dotenv/config";
 import { connectDB } from "./config/db";
 
@@ -7,6 +9,7 @@ import { connectDB } from "./config/db";
 const app = express();
 connectDB();
 
+app.use(cors(corsOptions));
 // Leer datos de formulario
 app.use(express.json());
 
