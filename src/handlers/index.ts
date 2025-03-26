@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import slugify from "slugify";
 import { User } from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
+import { generateJWT } from "../utils/jwt";
 
 export const createAccount = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -41,12 +42,11 @@ export const login = async (req: Request, res: Response) => {
   }
 
   // comprobar si la contraseña es correcta
-
   const isPasswordCorrect = await checkPassword(password, user.password);
   if (!isPasswordCorrect) {
     const error = new Error("Password is incorrect");
     res.status(401).json({ error: error.message });
-  } else {
-    res.status(200).json(user);
   }
+  const token = generateJWT(user._id);
+  res.json({ token });
 };
