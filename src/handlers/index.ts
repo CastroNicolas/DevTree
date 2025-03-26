@@ -47,6 +47,6 @@ export const login = async (req: Request, res: Response) => {
     const error = new Error("Password is incorrect");
     res.status(401).json({ error: error.message });
   }
-  const token = generateJWT(user._id);
-  res.json({ token });
+  const token = generateJWT({ id: user._id });
+  res.send(token);
 };
