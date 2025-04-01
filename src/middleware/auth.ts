@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { IUser, User } from "../models/User";
 import jwt from "jsonwebtoken";
+import { IUser, User } from "../models/User";
 
 declare global {
   namespace Express {
@@ -32,8 +32,9 @@ export const authenticate = async (
 
   try {
     const result = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof result === "object" && result.payload.id) {
-      const user = await User.findById(result.payload.id).select("-password");
+    if (typeof result === "object" && result.id) {
+      const user = await User.findById(result.id).select("-password");
+
       if (!user) {
         const error = new Error("User not found");
         res.status(404).json({ error: error.message });

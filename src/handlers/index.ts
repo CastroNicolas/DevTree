@@ -54,3 +54,25 @@ export const login = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   res.json(req.user);
 };
+
+export const updatePrifile = async (req: Request, res: Response) => {
+  try {
+    const { description } = req.body;
+    const handle = slugify(req.body.handle, "");
+    const handleExist = await User.findOne({ handle });
+
+    if (handleExist && handleExist.email !== req.user.email) {
+      const error = new Error("User whit this handle already exists");
+      res.status(409).json({ error: error.message });
+      return;
+    }
+    // Actualiza el usuario
+    req.user.handle = handle;
+    req.user.description = description;
+    await req.user.save();
+    res.send("Porfile updated");
+  } catch (e) {
+    const error = new Error("Something went wrong");
+    res.status(500).json({ error: error.message });
+  }
+};
