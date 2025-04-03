@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import slugify from "slugify";
+import formidable from "formidable";
+import { v4 as uuid } from "uuid";
 import { User } from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
+import cloudinary from "../config/cloudinary";
 
 export const createAccount = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -71,6 +74,36 @@ export const updatePrifile = async (req: Request, res: Response) => {
     req.user.description = description;
     await req.user.save();
     res.send("Porfile updated");
+  } catch (e) {
+    const error = new Error("Something went wrong");
+    res.status(500).json({ error: error.message });
+  }
+};
+export const uploadImage = async (req: Request, res: Response) => {
+  const form = formidable({ multiples: false });
+
+  try {
+    form.parse(req, (err, fields, files) => {
+      console.log();
+      cloudinary.uploader.upload(
+        files.file[0].filepath,
+        // { public_id: uuid() }, sirve para darle un id a la imagen
+        { public_id: uuid() },
+        async function (error, result) {
+          if (error) {
+            const error = new Error("Something went wrong uploading image");
+            res.status(500).json({ error: error.message });
+          }
+          if (result) {
+            // console.log(result.secure_url);
+            req.user.image = result.secure_url;
+            await req.user.save();
+            res.json({ image: result.secure_url });
+          }
+        }
+      );
+    });
+    console.log("image uploaded");
   } catch (e) {
     const error = new Error("Something went wrong");
     res.status(500).json({ error: error.message });
