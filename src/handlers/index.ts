@@ -104,7 +104,41 @@ export const uploadImage = async (req: Request, res: Response) => {
         }
       );
     });
-    console.log("image uploaded");
+  } catch (e) {
+    const error = new Error("Something went wrong");
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserByHandler = async (req: Request, res: Response) => {
+  try {
+    const { handle } = req.params;
+    const user = await User.findOne({ handle }).select(
+      "-password -email -_id -__v"
+    );
+    if (!user) {
+      const error = new Error("User whit this handle doesn't exists");
+      res.status(404).json({ error: error.message });
+      return;
+    }
+    res.json(user);
+  } catch (e) {
+    const error = new Error("Something went wrong");
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const searchByHandle = async (req: Request, res: Response) => {
+  try {
+    // console.log(req.body.handle);
+    const { handle } = req.body;
+    const user = await User.findOne({ handle });
+    if (user) {
+      const error = new Error(`${handle} already registered`);
+      res.status(409).json({ error: error.message });
+      return;
+    }
+    res.send(`${handle} is available`);
   } catch (e) {
     const error = new Error("Something went wrong");
     res.status(500).json({ error: error.message });

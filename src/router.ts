@@ -3,7 +3,9 @@ import { body } from "express-validator";
 import {
   createAccount,
   getUser,
+  getUserByHandler,
   login,
+  searchByHandle,
   updatePrifile,
   uploadImage,
 } from "./handlers";
@@ -36,9 +38,16 @@ router.get("/user", authenticate, getUser);
 router.patch(
   "/user",
   body("handle").notEmpty().withMessage("Handle is required"),
-  body("description").notEmpty().withMessage("Description is required"),
+  // body("description").notEmpty().withMessage("Description is required"),
   authenticate,
   updatePrifile
 );
 router.post("/user/image", authenticate, uploadImage);
+router.get("/:handle", getUserByHandler);
+router.post(
+  "/search",
+  body("handle").notEmpty().withMessage("Handle is required"),
+  handleInputErrors,
+  searchByHandle
+);
 export default router;
