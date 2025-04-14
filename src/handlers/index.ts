@@ -85,7 +85,6 @@ export const uploadImage = async (req: Request, res: Response) => {
 
   try {
     form.parse(req, (err, fields, files) => {
-      console.log();
       cloudinary.uploader.upload(
         files.file[0].filepath,
         // { public_id: uuid() }, sirve para darle un id a la imagen
@@ -96,7 +95,6 @@ export const uploadImage = async (req: Request, res: Response) => {
             res.status(500).json({ error: error.message });
           }
           if (result) {
-            // console.log(result.secure_url);
             req.user.image = result.secure_url;
             await req.user.save();
             res.json({ image: result.secure_url });
@@ -130,7 +128,6 @@ export const getUserByHandler = async (req: Request, res: Response) => {
 
 export const searchByHandle = async (req: Request, res: Response) => {
   try {
-    // console.log(req.body.handle);
     const { handle } = req.body;
     const user = await User.findOne({ handle });
     if (user) {
