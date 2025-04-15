@@ -74,7 +74,7 @@ export const updatePrifile = async (req: Request, res: Response) => {
     req.user.description = description;
     req.user.links = links;
     await req.user.save();
-    res.send("Porfile updated");
+    res.send("Profile updated");
   } catch (e) {
     const error = new Error("Something went wrong");
     res.status(500).json({ error: error.message });
